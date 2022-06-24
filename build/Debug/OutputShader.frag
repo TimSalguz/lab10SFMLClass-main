@@ -49,8 +49,8 @@ vec3 getSky(vec3 rd) {
 	//moon*= max(0.0, pow(dot(rd, light), 32.0));
 	return clamp(sun + col, 0.0, 1.0);
 }
-//Проверяет пересечение
-vec3 castRay(vec3 ro, vec3 rd) {
+//Проверяет пересечение, inout - квалификатор параметра
+vec3 castRay(inout vec3 ro, inout vec3 rd) {
 	vec3 col;
 	vec2 minIt = vec2(MAX_DIST);
 	vec2 it;
@@ -85,10 +85,10 @@ vec3 castRay(vec3 ro, vec3 rd) {
 	//Диффузное освещение от направления к солнцу(свету)
 	float diffuse = max(0.0, dot(light, n));
 	//отраженный свет
-	//rd = reflect(rd, n);
 	float specular = max(0.0, pow(dot(reflect(rd, n), light), 32.0));
 	col *= mix(diffuse, specular, 0.5);
 	ro += rd * (minIt.x - 0.001);
+	rd = reflect(rd, n);
 	return col;
 }
 //Тени
