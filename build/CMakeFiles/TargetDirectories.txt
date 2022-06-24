@@ -1,0 +1,3 @@
+D:/downloads/Compressed/lab10SFMLClass-main/build/CMakeFiles/sfml_sample.dir
+D:/downloads/Compressed/lab10SFMLClass-main/build/CMakeFiles/ALL_BUILD.dir
+D:/downloads/Compressed/lab10SFMLClass-main/build/CMakeFiles/ZERO_CHECK.dir
