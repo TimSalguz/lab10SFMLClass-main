@@ -3,7 +3,7 @@ uniform vec2 u_mouse;
 uniform vec3 u_pos;
 uniform float u_time;
 
-const float MAX_DIST = 99999.0;
+const float MAX_DIST = 99999.9;
 vec3 light = normalize(vec3(-0.5, 0.75, -1.0));
 
 mat2 rot(float a) {
@@ -36,7 +36,7 @@ vec2 boxIntersection(in vec3 ro, in vec3 rd, in vec3 rad, out vec3 oN)  {
 }
 
 //Проверяет пересечение с плоскостью
-float plaIntersect(in vec3 ro, in vec3 rd, in vec4 p) {
+float planeIntersect(in vec3 ro, in vec3 rd, in vec4 p) {
 	return -(dot(ro, p.xyz) + p.w) / dot(rd, p.xyz);
 }
 
@@ -55,16 +55,38 @@ vec3 castRay(inout vec3 ro, inout vec3 rd) {
 	vec2 minIt = vec2(MAX_DIST);
 	vec2 it;
 	vec3 n;
-	vec3 spherePos = vec3(0.0, -1.0, 0.0);
-	//Если пересекаю, то... потом надо ретюрнить небо
-	it = sphIntersect(ro - spherePos, rd, 1.0);
-	if(it.x > 0.0 && it.x < minIt.x) {
-		minIt = it;
-		//К координатам камеры прибаляю направление луча * на расстояние
-		vec3 itPos = ro + rd * it.x;
-		n = itPos - spherePos;
-		col = vec3(1.0, 0.2, 0.1);
+
+	//Создаю несколько сфер
+	mat2x4 spheres[4];
+	spheres[0][0] = vec4(0.0, -1.0, 0.0, 1.0);
+	spheres[0][1] = vec4(1.0, 0.2, 0.1, 1.0);
+	spheres[1][0] = vec4(10.0, 3.0, -0.25, 2.0);
+	spheres[1][1] = vec4(1.0, 1.0, 1.0, 0.0);
+	spheres[2][0] = vec4(5.0, 7.0, -0.01, 1.0);
+	spheres[2][1] = vec4(1.0, 1.0, 1.0, -1.0);
+	spheres[3][0] = vec4(0.0, 0.0, 101.0, 100.0);
+	spheres[3][1] = vec4(0.0, 0.6941, 0.149, 1.0);
+
+
+	for(int i = 0; i < spheres.length(); i++) {
+		it = sphIntersect(ro - spheres[i][0].xyz, rd, spheres[i][0].w);
+		if(it.x > 0.0 && it.x < minIt.x) {
+			minIt = it;
+			vec3 itPos = ro + rd * it.x;
+			n = normalize(itPos - spheres[i][0].xyz);
+			col = spheres[i][1];
+		}
 	}
+	// vec3 spherePos = vec3(0.0, -1.0, 0.0);
+	// //Если пересекаю, то... потом надо ретюрнить небо
+	// it = sphIntersect(ro - spherePos, rd, 1.0);
+	// if(it.x > 0.0 && it.x < minIt.x) {
+	// 	minIt = it;
+	// 	//К координатам камеры прибавляю направление луча * на расстояние
+	// 	vec3 itPos = ro + rd * it.x;
+	// 	n = itPos - spherePos;
+	// 	col = vec3(1.0, 0.2, 0.1);
+	// }
 	vec3 boxN;
 	vec3 boxPos = vec3(0.0, 2.0, 0.0);
 	it = boxIntersection(ro - boxPos, rd, vec3(1.0), boxN);
@@ -73,8 +95,8 @@ vec3 castRay(inout vec3 ro, inout vec3 rd) {
 		n = boxN;
 		col = vec3(0.4, 0.6, 0.8);
 	}
-	vec3 planeNormal = vec3(0.0, 0.0, -1.0);
-	it = plaIntersect(ro, rd, vec4(planeNormal, 1.0));
+	vec3 planeNormal = vec3(0.0, 0.0, 0.0);
+	it = planeIntersect(ro, rd, vec4(planeNormal, 1.0));
 	//Находим ближайший к камере объект при пересечении с лучами
 	if(it.x > 0.0 && it.x < minIt.x) {
 		minIt = it;

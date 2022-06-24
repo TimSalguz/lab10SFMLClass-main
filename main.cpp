@@ -137,13 +137,10 @@ int main()
 			shader.setUniform("u_pos", pos);
 			shader.setUniform("u_mouse", sf::Vector2f(mx, my));
 			shader.setUniform("u_time", clock.getElapsedTime().asSeconds());
-			shader.setUniform("u_sample_part", 1.0f / framesStill);
-			shader.setUniform("u_seed1", sf::Vector2f((float)dist(e2), (float)dist(e2)) * 999.0f);
-			shader.setUniform("u_seed2", sf::Vector2f((float)dist(e2), (float)dist(e2)) * 999.0f);
 		}
 		if (framesStill % 2 == 1)
 		{
-			shader.setUniform("u_sample", firstTexture.getTexture());
+			//shader.setUniform("u_sample", firstTexture.getTexture());
 			outputTexture.draw(firstTextureSpriteFlipped, &shader);
 			window.draw(outputTextureSprite);
 		}
